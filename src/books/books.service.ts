@@ -5,7 +5,7 @@ import { BooksRepository } from './books.repository';
 
 @Injectable()
 export class BooksService {
-  constructor(private booksRepository: BooksRepository) { }
+  constructor(private booksRepository: BooksRepository) {}
 
   getAllBooks() {
     return this.booksRepository.getAllBooks();
@@ -27,27 +27,41 @@ export class BooksService {
     return this.booksRepository.updateBook(id, updateBookDto);
   }
 
-  deleteBook(id) {
-    return this.booksRepository.deleteBook(id);
+  async deleteBook(id) {
+    const { affected } = await this.booksRepository.deleteBook(id);
+
+    return affected === 1
+      ? 'O livro foi deletado com sucesso.'
+      : 'O livro que você está tentando deletar não existe mais.';
   }
 
   async reserveBook(id, user) {
-    const { affected } = await this.booksRepository.update({ id: id, user: null }, { user: user, status: 'Reservado' });
+    const { affected } = await this.booksRepository.update(
+      { id: id, user: null },
+      { user: user, status: 'Reservado' },
+    );
 
     if (affected == 1) {
-      return { success: true }
+      return `Olá, ${user.username}! A reserva do livro foi realizado com sucesso.`;
     } else {
-      throw new ConflictException('Esse livro foi reservado por outro usuário.')
+      throw new ConflictException(
+        'Esse livro foi reservado por outro usuário.',
+      );
     }
   }
 
   async borrowBook(id, user) {
-    const { affected } = await this.booksRepository.update({ id: id, user: user }, { status: 'Emprestado' });
+    const { affected } = await this.booksRepository.update(
+      { id: id, user: user },
+      { status: 'Emprestado' },
+    );
 
     if (affected == 1) {
-      return { success: true }
+      return `Olá, ${user.username}! O empréstimo do livro foi realizado com sucesso.`;
     } else {
-      throw new ConflictException('Você não pode pegar esse livro, ele foi emprestado à outro usuário.')
+      throw new ConflictException(
+        'Você não pode pegar esse livro, ele foi emprestado à outro usuário.',
+      );
     }
   }
 }
