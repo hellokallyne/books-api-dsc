@@ -6,6 +6,6 @@ import { BooksExecutionService } from './books-execution.service';
 @Module({
   imports: [BooksModule],
   controllers: [BooksExecutionController],
-  providers: [BooksExecutionService]
+  providers: [BooksExecutionService],
 })
-export class BooksExecutionModule { }
+export class BooksExecutionModule {}
