@@ -41,7 +41,7 @@ export class BooksService {
       { user: user, status: 'Reservado' },
     );
 
-    if (affected == 1) {
+    if (affected === 1) {
       return `Olá, ${user.username}! A reserva do livro foi realizado com sucesso.`;
     } else {
       throw new ConflictException(
@@ -56,12 +56,20 @@ export class BooksService {
       { status: 'Emprestado' },
     );
 
-    if (affected == 1) {
+    const { status } = await this.booksRepository.getBookById(id);
+
+    if (affected === 1) {
       return `Olá, ${user.username}! O empréstimo do livro foi realizado com sucesso.`;
     } else {
-      throw new ConflictException(
-        'Você não pode pegar esse livro, ele foi emprestado à outro usuário.',
-      );
+      if (status === 'Emprestado') {
+        throw new ConflictException(
+          'Você não pode pegar esse livro, ele está com outro usuário no momento.',
+        );
+      } else {
+        throw new ConflictException(
+          'Você precisa reservar o livro antes de realizar o empréstimo.',
+        );
+      }
     }
   }
 }

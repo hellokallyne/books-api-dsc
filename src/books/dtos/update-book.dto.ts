@@ -25,4 +25,6 @@ export class UpdateBookDto {
   @IsNotEmpty({ message: 'O campo publishing_house não deve ser vazio.' })
   @IsString({ message: 'O campo publishing_house deve ser uma string.' })
   publishing_house: string;
+
+  status: string;
 }
